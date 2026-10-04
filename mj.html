@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Espace MJ</title>
+<link rel="stylesheet" href="css/style.css"></head><body>
+<nav><b>Espace MJ</b><a href="index.html">Accueil</a><a href="joueur.html">Écran de session</a><a href="#" id="out" class="hide">Déconnexion</a></nav>
+<main>
+<div id="login" class="card hide" style="max-width:380px;margin:40px auto">
+  <h2 style="margin-top:0">Connexion MJ</h2>
+  <div class="row"><input type="password" id="pw" class="t" placeholder="Mot de passe"><button class="p" id="go">Entrer</button></div>
+  <p class="mut" id="err"></p>
+</div>
+<div id="app" class="hide">
+  <div class="tabs" id="tabs"></div>
+  <div id="tab"></div>
+</div>
+</main>
+<script type="module" src="js/mj.js"></script>
+</body></html>
