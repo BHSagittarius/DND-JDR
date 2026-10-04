@@ -1,13 +1,17 @@
 import { db, auth, MJ_EMAIL, doc, collection, addDoc, deleteDoc, getDoc, signInWithEmailAndPassword, signOut,
   onAuthStateChanged, watchCol, watchDoc, saveDoc, esc } from "./firebase.js";
 import { NAT, PAL, MOD, APO, E, Z } from "./data.js";
+import { gloirePlaque, faveurPlaque } from "./plaque.js";
 
 const $ = id => document.getElementById(id);
 const R = n => 1 + Math.floor(Math.random() * n);
-const D0 = () => ({ sel: [], notes: "", cfg: { nj: 4, dd: 4, dm: 4, adj: 0, dp: 4, nat: "" }, gl: [0, 0, 0, 0, 0], fv: [0, 0, 0, 0],
+const D0 = () => ({ sel: [], notes: "", cfg: { nj: 4, dd: 4, dm: 4, adj: 0, dp: 4, nat: "" },
   z: { on: false, tour: 0, tm: 0, ph: "J", ga: 0, gm: 0, ea: 0, em: 0, res: false, obj: [], log: [] } });
-let S = D0(), live = {}, pins = [], chars = [], tab = "session", pe = { id: null, x: null, y: null }, ce = null, rolls = [];
-const TABS = [["session", "Session"], ["scen", "Scénarios"], ["des", "Dés"], ["mon", "Monstres"], ["carte", "Carte"], ["persos", "Personnages"], ["camp", "Gloire & faveur"], ["site", "Prochaine session"]];
+// S = état privé de la séance ; camp = gloire/faveur publiques et persistantes
+let S = D0(), camp = { gl: [0, 0, 0, 0, 0], fv: [0, 0, 0, 0] }, live = {}, pins = [], chars = [], tab = "session",
+  pe = { id: null, x: null, y: null }, ce = null, rolls = [];
+const TABS = [["session", "Session"], ["scen", "Scénarios"], ["des", "Dés"], ["mon", "Monstres"], ["carte", "Carte"], ["persos", "Personnages"],
+  ["camp", "Gloire & faveur"], ["bes", "Besace"], ["site", "Prochaine session"]];
 
 /* ---------- connexion ---------- */
 $("go").onclick = async () => {
@@ -24,19 +28,21 @@ onAuthStateChanged(auth, async u => {
     started = true;
     const s = await getDoc(doc(db, "session", "mj")); if (s.exists()) S = Object.assign(D0(), s.data());
     watchDoc("session/live", l => live = l);
+    watchDoc("config/campagne", c => { camp = { gl: c.gl || camp.gl, fv: c.fv || camp.fv }; if (tab === "camp") view(); });
     watchCol("pins", l => { pins = l; if (tab === "carte") view(); });
-    watchCol("characters", l => { chars = l; if (tab === "persos" && !ce) view(); });
+    watchCol("characters", l => { chars = l; if (tab === "persos" && ce === null) view(); });
     $("tabs").innerHTML = TABS.map(([k, n]) => `<button data-a="tab" data-k="${k}">${n}</button>`).join("");
     view();
   }
 });
 
 const saveS = () => saveDoc("session/mj", S);
+const saveCamp = () => saveDoc("config/campagne", { gl: camp.gl, fv: camp.fv });
 const pushLive = p => saveDoc("session/live", p);
-const pubZone = () => pushLive({ zone: { ...S.z, log: [] }, gl: S.gl });
+const pubZone = () => pushLive({ zone: { ...S.z, log: [] } });
 function view() {
   document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === tab));
-  ({ session: vSession, scen: vScen, des: vDes, mon: vMon, carte: vCarte, persos: vPersos, camp: vCamp, site: vSite })[tab]();
+  ({ session: vSession, scen: vScen, des: vDes, mon: vMon, carte: vCarte, persos: vPersos, camp: vCamp, bes: vBes, site: vSite })[tab]();
 }
 
 /* ---------- Session ---------- */
@@ -46,8 +52,7 @@ function vSession() {
   <div class="row" style="margin-top:6px"><button class="p" data-a="showText">Afficher le texte</button>
   <input class="t" id="du" placeholder="Image (ex : assets/maps/donjon.jpg ou URL)"><button class="p" data-a="showImg">Afficher l'image</button>
   <button data-a="clearScr">Vider l'écran</button></div>
-  <div class="row" style="margin-top:6px"><label><input type="checkbox" id="sz" ${live.showZone ? "checked" : ""}> Montrer la zone</label>
-  <label><input type="checkbox" id="sg" ${live.showGlory ? "checked" : ""}> Montrer la gloire</label></div></div>
+  <div class="row" style="margin-top:6px"><label><input type="checkbox" id="sz" ${live.showZone ? "checked" : ""}> Montrer la zone aux joueurs</label></div></div>
   <h2>Scénarios choisis</h2><div id="sl"></div>
   <h2>Zone d'évènement</h2><div id="zt"></div>
   <h2>Notes du MJ</h2><textarea id="notes" style="min-height:120px">${esc(S.notes)}</textarea>`;
@@ -70,7 +75,7 @@ function zone() {
   <label>Joueurs <input id="c_nj" type="number" value="${c.nj}"></label><label>Dé diff. d<input id="c_dd" type="number" value="${c.dd}"></label>
   <label>Dé menace d<input id="c_dm" type="number" value="${c.dm}"></label><label>Ajust. ennemis <input id="c_adj" type="number" value="${c.adj}"></label>
   <label>Précision d<input id="c_dp" type="number" value="${c.dp}"></label>+2
-  <label>Nation <select id="c_nat"><option value="">Aucune</option>${NAT.map((n, i) => `<option value="${i}"${c.nat === String(i) ? " selected" : ""}>${n} (${S.gl[i] > 0 ? "+" : ""}${S.gl[i]})</option>`).join("")}</select></label></div>
+  <label>Nation <select id="c_nat"><option value="">Aucune</option>${NAT.map((n, i) => `<option value="${i}"${c.nat === String(i) ? " selected" : ""}>${n} (${camp.gl[i] > 0 ? "+" : ""}${camp.gl[i]})</option>`).join("")}</select></label></div>
   <div class="row" style="margin-top:8px"><button class="p" data-a="zStart">Lancer la zone</button><button data-a="zReset">Réinitialiser</button></div></div>
   <div class="card"><div class="row" style="justify-content:space-around">
   <div class="stat"><div class="big">${z.on ? z.tour + "/" + z.tm : "-"}</div><div class="mut">Tour</div></div>
@@ -130,7 +135,7 @@ function monList() {
 function vCarte() {
   const p = pins.find(x => x.id === pe.id) || {};
   $("tab").innerHTML = `<h2>Pins de la carte</h2><p class="mut">Clique sur la carte pour placer le pin, ou sur un pin pour le modifier.</p>
-  <div class="map" id="mapm"><img src="assets/carte.jpg" alt="">${pins.map(q => `<button class="pin${q.id === pe.id ? " sel" : ""}" data-a="editPin" data-id="${q.id}" style="left:${q.x}%;top:${q.y}%" title="${esc(q.name)}"></button>`).join("")}
+  <div class="map" id="mapm"><img src="assets/map2.jpg" alt="">${pins.map(q => `<button class="pin${q.id === pe.id ? " sel" : ""}" data-a="editPin" data-id="${q.id}" style="left:${q.x}%;top:${q.y}%" title="${esc(q.name)}"></button>`).join("")}
   ${pe.x != null ? `<span class="pin sel" style="left:${pe.x}%;top:${pe.y}%;pointer-events:none"></span>` : ""}</div>
   <div class="card"><div class="row"><input class="t" id="pn" placeholder="Nom du lieu" value="${esc(p.name)}"><label>Du <input type="date" id="pf" value="${esc(p.from)}"></label><label>au <input type="date" id="pt" value="${esc(p.to)}"></label></div>
   <textarea id="ps" placeholder="Résumé de ce qui s'est passé ici" style="margin:6px 0">${esc(p.summary)}</textarea>
@@ -153,10 +158,24 @@ function vPersos() {
   }
 }
 
-/* ---------- Gloire & faveur ---------- */
+/* ---------- Gloire & faveur (publiques, conservées entre les séances) ---------- */
 function vCamp() {
-  $("tab").innerHTML = `<h2>Gloire des nations</h2><div class="g">${NAT.map((n, i) => { const v = S.gl[i], m = MOD[v]; return `<div class="card"><b>${n}</b><div class="row"><button data-a="gl" data-i="${i}" data-d="-1">−</button><span class="big">${v > 0 ? "+" : ""}${v}</span><button data-a="gl" data-i="${i}" data-d="1">+</button><span>${PAL[v]}</span></div><div class="mut">Actions du groupe ${m > 0 ? "+" + m : m < 0 ? m : "inchangées"}</div></div>`; }).join("")}</div>
-  <h2>Faveur des apôtres</h2><div class="g">${APO.map((a, i) => { const p = S.fv[i], n = p >= 9 ? 3 : p >= 5 ? 2 : p >= 2 ? 1 : 0; return `<div class="card"><b>${a[0]}</b> <span class="mut">${["Étranger", "Éveillé", "Dévot", "Élu"][n]}</span><div class="row"><button data-a="fv" data-i="${i}" data-d="-1">−</button><span class="big">${p}</span><button data-a="fv" data-i="${i}" data-d="1">+</button></div><div class="mut">${n >= 1 ? "✔" : "✘"} ${a[1]}<br>${n >= 2 ? "✔" : "✘"} ${a[2]}<br>${n >= 3 ? "✔" : "✘"} ${a[3]}</div></div>`; }).join("")}</div>`;
+  const btn = (a, i) => `<div class="row" style="justify-content:center;margin-top:4px"><button data-a="${a}" data-i="${i}" data-d="-1">−</button><button data-a="${a}" data-i="${i}" data-d="1">+</button></div>`;
+  $("tab").innerHTML = `<h2>Gloire des nations</h2><p class="mut">Visible en permanence par les joueurs et conservée entre les séances.</p>
+  <div class="plaques">${NAT.map((n, i) => { const m = MOD[camp.gl[i]]; return `<div>${gloirePlaque(n, camp.gl[i])}${btn("gl", i)}<div class="mut" style="text-align:center">Actions du groupe ${m > 0 ? "+" + m : m < 0 ? m : "inchangées"}</div></div>`; }).join("")}</div>
+  <h2>Faveur des apôtres</h2>
+  <div class="plaques">${APO.map((a, i) => { const p = camp.fv[i], n = p >= 9 ? 3 : p >= 5 ? 2 : p >= 2 ? 1 : 0; return `<div>${faveurPlaque(a[0], p)}${btn("fv", i)}<div class="mut" style="text-align:center">${n >= 1 ? "✔" : "✘"} ${esc(a[1])}<br>${n >= 2 ? "✔" : "✘"} ${esc(a[2])}<br>${n >= 3 ? "✔" : "✘"} ${esc(a[3])}</div></div>`; }).join("")}</div>`;
+}
+
+/* ---------- Besace ---------- */
+const itemRow = it => `<div class="row" data-r style="margin:4px 0"><input class="t bn" placeholder="Objet" value="${esc(it?.n)}"><input class="bq" type="number" placeholder="Qté" value="${esc(it?.q ?? 1)}"><input class="bc" list="cats" placeholder="Catégorie" value="${esc(it?.c)}"><input class="t bd" placeholder="Détails" value="${esc(it?.d)}"><button class="x" data-a="delRow">×</button></div>`;
+async function vBes() {
+  const s = await getDoc(doc(db, "config", "besace")), b = s.data() || {}, g = b.gold || {};
+  $("tab").innerHTML = `<h2>La besace</h2><div class="card"><div class="row"><label>PO <input type="number" id="bg_po" value="${esc(g.po ?? 0)}"></label><label>PA <input type="number" id="bg_pa" value="${esc(g.pa ?? 0)}"></label><label>PC <input type="number" id="bg_pc" value="${esc(g.pc ?? 0)}"></label></div></div>
+  <div class="card"><b>Objets</b><datalist id="cats">${["Armes et armures", "Consommables", "Objets magiques", "Quête", "Divers"].map(c => `<option value="${c}">`).join("")}</datalist>
+  <div id="brows">${(b.items || []).map(itemRow).join("")}</div><div style="margin-top:8px"><button data-a="addRow">+ Ajouter un objet</button></div></div>
+  <h2>Informations du groupe</h2><textarea id="bnotes" style="min-height:140px">${esc(b.notes)}</textarea>
+  <div class="row" style="margin-top:8px"><button class="p" data-a="saveBes">Enregistrer</button></div>`;
 }
 
 /* ---------- Prochaine session ---------- */
@@ -168,6 +187,7 @@ async function vSite() {
 
 /* ---------- actions ---------- */
 const val = id => $(id).value.trim();
+const done = b => { const t = b.textContent; b.textContent = "Enregistré ✓"; setTimeout(() => b.textContent = t, 1500); };
 const A = {
   tab: d => { tab = d.k; ce = null; view(); },
   showText: () => pushLive({ display: { type: "text", title: val("dt"), text: $("dx").value } }),
@@ -176,7 +196,7 @@ const A = {
   loadZ: d => { const z = Z.find(x => x.c === d.c); S.cfg.dm = z.dm; S.z.obj = z.o.map(t => ({ t, d: false, h: false })); saveS(); pubZone(); zone(); },
   showZ: d => { const z = Z.find(x => x.c === d.c); pushLive({ display: { type: "text", title: z.n, text: z.l + "\n\n" + z.o.join("\n") } }); },
   zStart: () => {
-    readCfg(); const c = S.cfg, rd = R(c.dd), rm = R(c.dm), rp = R(c.dp), m = c.nat === "" ? 0 : MOD[S.gl[+c.nat]];
+    readCfg(); const c = S.cfg, rd = R(c.dd), rm = R(c.dm), rp = R(c.dp), m = c.nat === "" ? 0 : MOD[camp.gl[+c.nat]];
     const ga = Math.max(1, c.nj + rd + m), ea = Math.max(1, c.nj + rm + c.adj), tm = rp + 2, o = S.z.obj;
     S.z = { on: true, tour: 1, tm, ph: "J", ga, gm: ga, ea, em: ea, res: false, obj: o, log: [] };
     zlog(`Difficulté d${c.dd} : ${rd}${m ? " (gloire " + (m > 0 ? "+" : "") + m + ")" : ""} → ${ga} actions. Menace d${c.dm} : ${rm} → ${ea} actions ennemies. Précision d${c.dp} : ${rp}+2 = ${tm} tours.`); zUp();
@@ -196,10 +216,11 @@ const A = {
   showCustom: () => pushLive({ display: { type: "monster", m: { name: val("mn"), fp: val("mfp"), pv: val("mpv"), ca: val("mca"), att: $("ma").value } } }),
   editPin: d => { const p = pins.find(x => x.id === d.id); pe = { id: d.id, x: p.x, y: p.y }; vCarte(); },
   newPin: () => { pe = { id: null, x: null, y: null }; vCarte(); },
-  savePin: async () => {
+  savePin: async (d, b) => {
     if (pe.x == null) return alert("Clique d'abord sur la carte pour placer le pin.");
     const data = { name: val("pn"), from: $("pf").value, to: $("pt").value, summary: $("ps").value, x: pe.x, y: pe.y };
     if (pe.id) await saveDoc("pins/" + pe.id, data); else { const r = await addDoc(collection(db, "pins"), data); pe.id = r.id; }
+    done(b);
   },
   delPin: async () => { if (confirm("Supprimer ce pin ?")) { await deleteDoc(doc(db, "pins", pe.id)); pe = { id: null, x: null, y: null }; } },
   editChar: d => { ce = d.id === "__none" ? null : d.id; vPersos(); },
@@ -210,15 +231,25 @@ const A = {
     ce = null; vPersos();
   },
   delChar: async () => { if (confirm("Supprimer ce personnage ?")) { await deleteDoc(doc(db, "characters", ce)); ce = null; vPersos(); } },
-  gl: d => { S.gl[+d.i] = Math.max(-3, Math.min(3, S.gl[+d.i] + +d.d)); saveS(); pubZone(); vCamp(); },
-  fv: d => { S.fv[+d.i] = Math.max(0, Math.min(12, S.fv[+d.i] + +d.d)); saveS(); vCamp(); },
-  saveNext: () => saveDoc("config/site", { nextSession: { date: $("nd").value, note: val("nn") } }),
+  gl: d => { camp.gl[+d.i] = Math.max(-3, Math.min(3, camp.gl[+d.i] + +d.d)); saveCamp(); vCamp(); },
+  fv: d => { camp.fv[+d.i] = Math.max(0, Math.min(12, camp.fv[+d.i] + +d.d)); saveCamp(); vCamp(); },
+  addRow: () => $("brows").insertAdjacentHTML("beforeend", itemRow({})),
+  delRow: (d, b) => b.closest("[data-r]").remove(),
+  saveBes: async (d, b) => {
+    const items = [...document.querySelectorAll("[data-r]")].map(r => ({
+      n: r.querySelector(".bn").value.trim(), q: +r.querySelector(".bq").value || 0,
+      c: r.querySelector(".bc").value.trim() || "Divers", d: r.querySelector(".bd").value.trim() })).filter(i => i.n);
+    const n = k => +$("bg_" + k).value || 0;
+    await saveDoc("config/besace", { gold: { po: n("po"), pa: n("pa"), pc: n("pc") }, items, notes: $("bnotes").value });
+    done(b);
+  },
+  saveNext: async (d, b) => { await saveDoc("config/site", { nextSession: { date: $("nd").value, note: val("nn") } }); done(b); },
   clearNext: () => { saveDoc("config/site", { nextSession: { date: "", note: "" } }); vSite(); }
 };
 function zUp() { saveS(); pubZone(); zone(); }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-a]");
-  if (b) return A[b.dataset.a]?.(b.dataset);
+  if (b) return A[b.dataset.a]?.(b.dataset, b);
   const m = e.target.closest("#mapm");
   if (m && e.target.tagName === "IMG") {
     const r = e.target.getBoundingClientRect();
@@ -233,7 +264,6 @@ document.addEventListener("change", e => {
   else if (t.dataset.s) { const c = t.dataset.s; S.sel = t.checked ? [...new Set([...S.sel, c])] : S.sel.filter(x => x !== c); saveS(); }
   else if (t.id?.startsWith("c_")) { readCfg(); saveS(); }
   else if (t.id === "sz") pushLive({ showZone: t.checked });
-  else if (t.id === "sg") pushLive({ showGlory: t.checked });
 });
 document.addEventListener("input", e => {
   if (e.target.id === "mf") monList();

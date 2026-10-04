@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Campagne D&D : Le déclin de l'Empire</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f5ecd9;--fg:#2b2218;--mut:#6b5a45;--ac:#8a4b1f;--card:#fbf5e6;--bd:#d8c7a3}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1812;--fg:#efe4cf;--mut:#b5a48a;--ac:#e0a060;--card:#272018;--bd:#4a3d2c}}
+:root[data-theme="dark"]{--bg:#1d1812;--fg:#efe4cf;--mut:#b5a48a;--ac:#e0a060;--card:#272018;--bd:#4a3d2c}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 Georgia,"Times New Roman",serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.9rem;color:var(--ac);margin:.2em 0}
+h2{font-size:1.35rem;color:var(--ac);border-bottom:1px solid var(--bd);padding-bottom:4px;margin-top:2em}
+h3{font-size:1.05rem;margin:1.2em 0 .3em}
+p,li{margin:.4em 0}.mut{color:var(--mut)}
+.w{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem;background:var(--card)}
+th,td{border:1px solid var(--bd);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:var(--bd);color:var(--fg)}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 12px}
+</style></head><body><main><p><a href="../docs.html">← Documentation</a></p>
+<h1>Le déclin de l'Empire</h1>
+<p class="mut">Campagne D&amp;D, 4 à 5 joueurs, niveau de départ 3. Combats en zones d'évènement (inspiré de Rouge Flamme).</p>
+
+<h2>1. Contexte</h2>
+<p>L'Empire, né il y a environ 400 ans dans les plaines d'Udùn, doit sa puissance aux mines de Karnak, aux terres agricoles et à ses légions. Il décline : mines qui s'épuisent, cour de Megano corrompue, légions sous-payées, provinces qui s'éloignent, et une menace qui grandit dans la forêt interdite au nord. Biel, Eleica, Ellen et les ports libres profitent de sa faiblesse.</p>
+<p><b>Déclencheur :</b> la mort de l'empereur, qui ouvre une course à la succession entre gouverneurs, royaumes voisins et factions.</p>
+<p><b>Magie :</b> liée à des lieux de pouvoir (Gouffre de Chem, forêt de Nimbule, Sentier des âmes, forêt interdite). L'Empire en a perdu le contrôle.</p>
+
+<h2>2. Panthéon</h2>
+<p><b>Aurelion, le Gardien du Seuil</b> (ordre, loi, protection, passage) a scellé les lieux de pouvoir et choisi les fondateurs de l'Empire pour maintenir les sceaux. Il ne parle plus depuis des siècles.</p>
+<div class="w"><table><tr><th>Apôtre</th><th>Domaine</th><th>Sceau</th><th>Symbole</th><th>Rôle</th></tr>
+<tr><td>Vaelor, le Bouclier</td><td>Guerre / Ordre</td><td>Forêt interdite</td><td>Bouclier fendu</td><td>Patron des légions et de l'Ordre des Gardiens</td></tr>
+<tr><td>Ysmène, la Veilleuse</td><td>Tombe / Mort</td><td>Sentier des âmes</td><td>Lanterne voilée</td><td>Guide des morts, fusionnée avec le culte des ancêtres d'Eleica</td></tr>
+<tr><td>Maëlis, la Racine</td><td>Nature / Vie</td><td>Forêt de Nimbule</td><td>Arbre aux racines visibles</td><td>Vénérée à Biel comme esprit libre, sans les sceaux</td></tr>
+<tr><td>Kaldrin, le Scelleur</td><td>Savoir / Forge</td><td>Gouffre de Chem</td><td>Clé de pierre</td><td>A forgé les sceaux, légendaire disparu ; son savoir se perd</td></tr></table></div>
+
+<h2>3. Nations et cultes</h2>
+<div class="w"><table><tr><th>Nation</th><th>Rôle</th><th>Culte / tendance</th><th>Rival</th></tr>
+<tr><td>Empire (Megano)</td><td>Puissance en déclin</td><td>Culte d'État d'Aurelion : sceller</td><td>Biel</td></tr>
+<tr><td>Biel (ouest)</td><td>Ligue de cités forestières, ex-vassale</td><td>Esprits de la forêt : libérer</td><td>Empire</td></tr>
+<tr><td>Eleica (sud)</td><td>Royaume militarisé (Guante, Geai)</td><td>Ancêtres, Sentier des âmes : écouter les morts</td><td>Empire</td></tr>
+<tr><td>Ellen (nord-ouest)</td><td>Royaume maritime et commerçant</td><td>Marées et montagne, pragmatique</td><td>Ports libres</td></tr>
+<tr><td>Ports libres (Verson, Rorld, Vilenus)</td><td>Marchands et pirates</td><td>Pas de dieu officiel, pactes marins</td><td>Ellen</td></tr></table></div>
+
+<h2>4. Zones d'évènement</h2>
+<p>Variante de table type Zombicide : pas d'initiative, les joueurs jouent leur phase, puis les ennemis la leur.</p>
+<div class="w"><table><tr><th>Élément</th><th>Règle</th></tr>
+<tr><td>Actions du groupe par tour</td><td>Nombre de joueurs + dé de difficulté (d4) + modificateur de gloire. Réparties librement, 3 maximum par personnage.</td></tr>
+<tr><td>Actions ennemies par tour</td><td>Nombre de joueurs + dé de menace (d4 ou d6), jet unique au début. Plafond : 1 par sbire, 2 par ennemi important, 3 par chef. Ajustement de -1 possible si trop dur.</td></tr>
+<tr><td>Tours disponibles</td><td>d4 + 2. Quand le dernier tour est fini, la zone se résout automatiquement (ennemis qui fuient, indice perdu, personne non sauvée).</td></tr>
+<tr><td>Action</td><td>Action D&amp;D complète. Actions bonus gratuites (une par personnage et par tour).</td></tr>
+<tr><td>Talents</td><td>Une expertise peut donner +1 action, +1 tour ou révéler un secret (1 à 2 fois par zone).</td></tr>
+<tr><td>Évènements</td><td>Renforts, élites ou phénomènes à un tour prévu ou tiré au sort. Les ennemis sont tactiques.</td></tr></table></div>
+<p class="mut">Voir le <a href="zones.html">guide des zones d'évènement</a>.</p>
+
+<h2>5. Gloire des nations</h2>
+<p>Une jauge par nation (Empire, Biel, Eleica, Ellen, Ports libres), de -3 à +3, départ à 0.</p>
+<div class="w"><table><tr><th>Palier</th><th>Nom</th><th>Effet en zone sur son territoire</th></tr>
+<tr><td>-3</td><td>Proscrit</td><td>-2 actions du groupe, primes, arrestation probable</td></tr>
+<tr><td>-2</td><td>Hostile</td><td>-1 action du groupe</td></tr>
+<tr><td>-1</td><td>Méfiant</td><td>Prix +25 %</td></tr>
+<tr><td>0</td><td>Inconnu</td><td>Aucun</td></tr>
+<tr><td>+1</td><td>Reconnu</td><td>Informations et PNJ accessibles</td></tr>
+<tr><td>+2</td><td>Allié</td><td>+1 action du groupe</td></tr>
+<tr><td>+3</td><td>Champion</td><td>+2 actions du groupe, renforts 1 fois par zone</td></tr></table></div>
+
+<div class="w"><table><tr><th>Situation</th><th>Variation</th></tr>
+<tr><td>Zone réussie dans l'intérêt de la nation (max 1 par zone)</td><td>+1</td></tr>
+<tr><td>Choix majeur ou crise résolue pour elle</td><td>+1</td></tr>
+<tr><td>Zone échouée sur son territoire</td><td>-1</td></tr>
+<tr><td>Nuire à ses intérêts ou la trahir</td><td>-2</td></tr>
+<tr><td>Aider une nation rivale contre elle</td><td>-1</td></tr></table></div>
+<h3>Ce que débloquent les paliers</h3>
+<div class="w"><table><tr><th>Palier</th><th>Empire</th><th>Biel</th><th>Eleica</th><th>Ellen</th><th>Ports libres</th></tr>
+<tr><td>-3</td><td>Mandat d'arrêt, légions aux trousses</td><td>Chassés, la forêt se referme</td><td>Forteresses interdites</td><td>Blocus commercial</td><td>Pirates, contrats sur votre tête</td></tr>
+<tr><td>-2</td><td>Megano interdite, contrôles</td><td>Cités fermées</td><td>Sentier des âmes refusé</td><td>Ports fermés</td><td>Aucun marché noir</td></tr>
+<tr><td>-1</td><td>Pots-de-vin, patrouilles</td><td>Silence des habitants</td><td>Soupçon d'espionnage</td><td>Taxes d'étrangers</td><td>Rançons, surprix</td></tr>
+<tr><td>+1</td><td>Laissez-passer, garnisons</td><td>Guides forestiers</td><td>Passage aux forteresses</td><td>Passage maritime</td><td>Marché noir ouvert</td></tr>
+<tr><td>+2</td><td>Casernes, archives de Megano</td><td>Refuges, esprits locaux</td><td>Escorte sur le Sentier</td><td>Bateaux, financement</td><td>Navires, contrebande gratuite</td></tr>
+<tr><td>+3</td><td>Titre, voix dans la succession</td><td>Voix au conseil des cités</td><td>Conseil des ancêtres</td><td>Flotte à disposition</td><td>Maître d'un port</td></tr></table></div>
+
+<h2>6. Faveur des apôtres</h2>
+<p>Paliers : Éveillé (2 points), Dévot (5), Élu (9). Gain : +1 par action alignée (max 1 par zone). Perte : -2 si le groupe agit contre l'apôtre. Les bénédictions se rechargent à chaque séance.</p>
+<div class="g">
+<div class="c"><b>Vaelor</b><br>Éveillé : un allié relance une sauvegarde (1/zone).<br>Dévot : +1 action de groupe si l'objectif est de défendre (1/zone).<br>Élu : le décompte des tours est suspendu 1 tour (1/séance).<br><span class="mut">Gain : tenir une position, protéger. Perte : fuir, abandonner des civils.</span></div>
+<div class="c"><b>Ysmène</b><br>Éveillé : stabiliser un allié à 0 PV (1/zone).<br>Dévot : interroger un esprit pour un indice (1/zone).<br>Élu : un allié tombé depuis moins d'un round se relève (1/séance).<br><span class="mut">Gain : apaiser les morts. Perte : profaner, nécromancie.</span></div>
+<div class="c"><b>Maëlis</b><br>Éveillé : soins +1d6 (1/zone).<br>Dévot : avantage discrétion et passage en milieu naturel (1/zone).<br>Élu : les racines immobilisent des ennemis un round (1/séance).<br><span class="mut">Gain : préserver la nature. Perte : incendier la forêt.</span></div>
+<div class="c"><b>Kaldrin</b><br>Éveillé : le MJ révèle un objectif caché (1/zone).<br>Dévot : relancer le dé de difficulté d'une zone liée à un sceau (1/séance).<br>Élu : dissiper un phénomène magique ou renforcer un sceau (1/séance).<br><span class="mut">Gain : déchiffrer, renouveler un sceau. Perte : détruire un savoir.</span></div></div>
+<div class="w"><table style="margin-top:12px"><tr><th>Apôtre</th><th>Gloire favorisée</th><th>Gloire opposée</th></tr>
+<tr><td>Vaelor</td><td>Empire</td><td>Biel</td></tr><tr><td>Ysmène</td><td>Eleica</td><td>Empire</td></tr>
+<tr><td>Maëlis</td><td>Biel</td><td>Empire</td></tr><tr><td>Kaldrin</td><td>Ellen</td><td>Biel</td></tr></table></div>
+
+<h2>7. La succession</h2>
+<p><b>Déclencheur :</b> l'empereur Théodric IV meurt sans héritier désigné. Sa fille Isaure et son fils Corvin se disputent le trône.</p>
+</main></body></html>

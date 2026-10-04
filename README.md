@@ -3,27 +3,28 @@
 Site statique (GitHub Pages) + Firebase (base temps réel et mot de passe MJ).
 
 ## Pages
-- `index.html` : carte avec pins (dates + résumé), prochaine session, personnages cliquables
+- `index.html` : prochaine session + compte à rebours, carte (`assets/map2.jpg`) avec pins, personnages, plaques de gloire et de faveur
+- `besace.html` : bourse, objets et infos du groupe
+- `docs.html` : documentation pour les joueurs (`docs/monde.html`, `docs/zones.html`)
+- `joueur.html` : écran de session (ce que le MJ affiche, dernier jet, zone, gloire, faveur)
 - `perso.html?id=…` : fiche de personnage
-- `joueur.html` : écran joueurs (ce que le MJ affiche, dernier jet, zone, gloire)
-- `mj.html` : espace MJ protégé (session, scénarios, dés, monstres, carte, personnages, gloire/faveur, prochaine session)
+- `mj.html` : espace MJ protégé (session, scénarios, dés, monstres, carte, personnages, gloire & faveur, besace, prochaine session)
 
 ## Mise en place
-1. **Carte** : ajoute ton image dans `assets/carte.jpg`. Avatars : `assets/avatars/…` (ou URL).
-2. **Firebase** (console.firebase.google.com) : crée un projet, puis
-   - *Build > Firestore Database* : créer la base (mode production)
-   - *Build > Authentication > Email/Password* : activer, puis ajouter **un utilisateur** (ex. ton email + ton mot de passe MJ)
-   - *Paramètres du projet > Vos applications > Web* : copie la config dans `js/config.js` et mets l'email MJ dans `MJ_EMAIL`
-3. **Règles Firestore** (onglet Règles), en remplaçant l'email :
+1. Firebase : Firestore + Authentication (Email/Mot de passe) + un utilisateur MJ. La config est dans `js/config.js`.
+2. Règles Firestore (remplace l'email si besoin) :
 ```
 rules_version = '2';
 service cloud.firestore {
   match /databases/{db}/documents {
-    function mj() { return request.auth != null && request.auth.token.email == "mj@exemple.com"; }
+    function mj() { return request.auth != null && request.auth.token.email == "icedratox@gmail.com"; }
     match /session/mj { allow read, write: if mj(); }
     match /{path=**} { allow read: if true; allow write: if mj(); }
   }
 }
 ```
-   Les joueurs lisent tout sauf tes notes/scénarios (`session/mj`) ; seul le MJ écrit.
-4. **GitHub Pages** : pousse le dossier sur un dépôt, puis *Settings > Pages > Deploy from branch (main, /root)*. Dans Firebase *Authentication > Paramètres > Domaines autorisés*, ajoute `<ton-pseudo>.github.io`.
+3. GitHub Pages : Settings > Pages > Deploy from a branch (main, /root). Ajoute `<pseudo>.github.io` aux domaines autorisés (Firebase > Authentication > Paramètres).
+
+## Notes
+- La gloire et la faveur sont stockées dans `config/campagne` : publiques, modifiables par le MJ seul, conservées entre les séances.
+- Tout fichier du dépôt est public (y compris `js/data.js`, qui contient les scénarios ZE-001 à 006).

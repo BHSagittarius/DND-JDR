@@ -9,6 +9,7 @@ main{max-width:1100px;margin:0 auto;padding:16px 16px 48px}
 h1{font-size:1.8rem;color:var(--ac);margin:.3em 0}
 h2{font-size:1.25rem;color:var(--ac);border-bottom:1px solid var(--bd);padding-bottom:4px;margin:1.6em 0 .6em}
 h3{font-size:1.05rem;margin:.8em 0 .2em}
+a{color:var(--ac)}
 .mut{color:var(--mut);font-size:.9rem}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;margin:8px 0}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -50,3 +51,21 @@ th,td{border:1px solid var(--bd);padding:4px 7px;text-align:left;vertical-align:
 .done{text-decoration:line-through;color:var(--mut)}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 .tabs button.on{background:var(--ac);color:var(--bg);border-color:var(--ac)}
+/* plaques gloire / faveur */
+.plaques{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.plaque{width:100%;height:auto;display:block;filter:drop-shadow(0 4px 6px #0007)}
+/* prochaine session */
+.nextbox{text-align:center}
+.when{font-size:1.5rem;color:var(--ac);font-weight:bold}
+.cds{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.cd{background:var(--bg);border:1px solid var(--bd);border-radius:8px;min-width:78px;padding:6px 8px}
+.cd b{display:block;font-size:1.8rem;color:var(--ac);line-height:1.1}
+.cd span{font-size:.8rem;color:var(--mut)}
+/* besace */
+.coins{display:flex;gap:12px;flex-wrap:wrap}
+.coin{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:6px 16px 6px 8px}
+.coin i{width:28px;height:28px;border-radius:50%;border:2px solid #0004;display:block}
+.coin b{font-size:1.3rem}
+.po i{background:radial-gradient(circle at 35% 30%,#fff3b0,#e0a800 70%)}
+.pa i{background:radial-gradient(circle at 35% 30%,#fff,#9aa0a8 70%)}
+.pc i{background:radial-gradient(circle at 35% 30%,#ffd2b0,#b0642c 70%)}

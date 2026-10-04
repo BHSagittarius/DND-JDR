@@ -1,5 +1,6 @@
 import { watchDoc, esc } from "./firebase.js";
-import { NAT, PAL } from "./data.js";
+import { NAT, APO } from "./data.js";
+import { gloirePlaque, faveurPlaque } from "./plaque.js";
 
 const $ = id => document.getElementById(id);
 
@@ -31,6 +32,11 @@ watchDoc("session/live", s => {
       ${z.res ? '<div class="banner">Plus de tours : la zone se résout.</div>' : ""}
       ${(z.obj || []).filter(o => !o.h).map(o => `<div class="${o.d ? "done" : ""}">• ${esc(o.t)}</div>`).join("")}</div>`;
   } else $("zone").innerHTML = "";
+});
 
-  $("glo").innerHTML = s.showGlory && s.gl ? `<h2>Gloire des nations</h2><div class="g">${NAT.map((n, i) => `<div class="card"><b>${n}</b><br>${s.gl[i] > 0 ? "+" : ""}${s.gl[i]} · ${PAL[s.gl[i]]}</div>`).join("")}</div>` : "";
+// Gloire et faveur : toujours visibles, fixées par le MJ
+watchDoc("config/campagne", c => {
+  const gl = c.gl || [0, 0, 0, 0, 0], fv = c.fv || [0, 0, 0, 0];
+  $("gl").innerHTML = NAT.map((n, i) => gloirePlaque(n, gl[i] ?? 0)).join("");
+  $("fv").innerHTML = APO.map((a, i) => faveurPlaque(a[0], fv[i] ?? 0)).join("");
 });
