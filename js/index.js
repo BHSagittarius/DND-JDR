@@ -1,8 +1,10 @@
 import { watchCol, watchDoc, esc } from "./firebase.js";
 import { NAT, APO } from "./data.js";
 import { gloirePlaque, faveurPlaque } from "./plaque.js";
+import { initMap } from "./mapview.js";
 
 const $ = id => document.getElementById(id);
+initMap($("map"));
 let pins = [], sel = null, target = null;
 
 /* ---- prochaine session + compte à rebours ---- */
@@ -32,7 +34,7 @@ function drawPins() {
     b.className = "pin" + (p.id === sel ? " sel" : "");
     b.style.left = p.x + "%"; b.style.top = p.y + "%"; b.title = p.name;
     b.onclick = () => { sel = p.id; drawPins(); showPin(p); };
-    $("map").appendChild(b);
+    $("mapin").appendChild(b);
   });
 }
 function showPin(p) {

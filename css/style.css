@@ -27,10 +27,14 @@ table{border-collapse:collapse;width:100%;font-size:.88rem;background:var(--card
 th,td{border:1px solid var(--bd);padding:4px 7px;text-align:left;vertical-align:top}th{background:var(--bd)}
 .hide{display:none!important}
 /* carte */
-.map{position:relative;border:2px solid var(--bd);border-radius:8px;overflow:hidden;background:var(--card);line-height:0}
-.map img{width:100%;height:auto;display:block}
-.pin{position:absolute;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;background:var(--ac);border:3px solid #fff;cursor:pointer;box-shadow:0 1px 5px #000a;padding:0}
-.pin:hover{transform:translate(-50%,-50%) scale(1.25)}
+.map{position:relative;border:2px solid var(--bd);border-radius:8px;overflow:hidden;background:var(--card);line-height:0;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.map:active{cursor:grabbing}
+.mapin{position:relative;transform-origin:0 0;will-change:transform}
+.map img{width:100%;height:auto;display:block;pointer-events:none;-webkit-user-drag:none}
+.mapctl{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px;line-height:1}
+.mapctl button{width:34px;height:34px;padding:0;font-size:1.2rem;background:var(--card);box-shadow:0 1px 4px #0006}
+.pin{position:absolute;transform:translate(-50%,-50%) scale(var(--inv,1));width:22px;height:22px;border-radius:50%;background:var(--ac);border:3px solid #fff;cursor:pointer;box-shadow:0 1px 5px #000a;padding:0}
+.pin:hover{transform:translate(-50%,-50%) scale(calc(var(--inv,1) * 1.25))}
 .pin.sel{background:var(--ko)}
 .pinbox{margin-top:10px}
 /* persos */

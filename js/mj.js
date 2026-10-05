@@ -2,6 +2,7 @@ import { db, auth, MJ_EMAIL, doc, collection, addDoc, deleteDoc, getDoc, signInW
   onAuthStateChanged, watchCol, watchDoc, saveDoc, esc } from "./firebase.js";
 import { NAT, PAL, MOD, APO, E, Z } from "./data.js";
 import { gloirePlaque, faveurPlaque } from "./plaque.js";
+import { initMap } from "./mapview.js";
 
 const $ = id => document.getElementById(id);
 const R = n => 1 + Math.floor(Math.random() * n);
@@ -135,11 +136,16 @@ function monList() {
 function vCarte() {
   const p = pins.find(x => x.id === pe.id) || {};
   $("tab").innerHTML = `<h2>Pins de la carte</h2><p class="mut">Clique sur la carte pour placer le pin, ou sur un pin pour le modifier.</p>
-  <div class="map" id="mapm"><img src="assets/map2.jpg" alt="">${pins.map(q => `<button class="pin${q.id === pe.id ? " sel" : ""}" data-a="editPin" data-id="${q.id}" style="left:${q.x}%;top:${q.y}%" title="${esc(q.name)}"></button>`).join("")}
-  ${pe.x != null ? `<span class="pin sel" style="left:${pe.x}%;top:${pe.y}%;pointer-events:none"></span>` : ""}</div>
+  <div class="map" id="mapm"><div class="mapin"><img src="assets/map2.jpg" alt="">${pins.map(q => `<button class="pin${q.id === pe.id ? " sel" : ""}" data-a="editPin" data-id="${q.id}" style="left:${q.x}%;top:${q.y}%" title="${esc(q.name)}"></button>`).join("")}
+  ${pe.x != null ? `<span class="pin sel" style="left:${pe.x}%;top:${pe.y}%;pointer-events:none"></span>` : ""}</div></div>
   <div class="card"><div class="row"><input class="t" id="pn" placeholder="Nom du lieu" value="${esc(p.name)}"><label>Du <input type="date" id="pf" value="${esc(p.from)}"></label><label>au <input type="date" id="pt" value="${esc(p.to)}"></label></div>
   <textarea id="ps" placeholder="Résumé de ce qui s'est passé ici" style="margin:6px 0">${esc(p.summary)}</textarea>
   <div class="row"><button class="p" data-a="savePin">Enregistrer</button><button data-a="newPin">Nouveau</button>${pe.id ? '<button class="x" data-a="delPin">Supprimer</button>' : ""}</div></div>`;
+  initMap($("mapm"), { onTap: (x, y) => {
+    pe.x = x; pe.y = y;
+    const keep = { n: $("pn").value, f: $("pf").value, t: $("pt").value, s: $("ps").value }; vCarte();
+    $("pn").value = keep.n; $("pf").value = keep.f; $("pt").value = keep.t; $("ps").value = keep.s;
+  } });
 }
 
 /* ---------- Personnages ---------- */
@@ -250,13 +256,6 @@ function zUp() { saveS(); pubZone(); zone(); }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-a]");
   if (b) return A[b.dataset.a]?.(b.dataset, b);
-  const m = e.target.closest("#mapm");
-  if (m && e.target.tagName === "IMG") {
-    const r = e.target.getBoundingClientRect();
-    pe.x = +(((e.clientX - r.left) / r.width) * 100).toFixed(2); pe.y = +(((e.clientY - r.top) / r.height) * 100).toFixed(2);
-    const keep = { n: $("pn").value, f: $("pf").value, t: $("pt").value, s: $("ps").value }; vCarte();
-    $("pn").value = keep.n; $("pf").value = keep.f; $("pt").value = keep.t; $("ps").value = keep.s;
-  }
 });
 document.addEventListener("change", e => {
   const t = e.target;
